@@ -2,25 +2,21 @@ import axios from "axios";
 import api from "../services/api";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button, Alert, AlertTitle, Input } from "@mui/material";
 
 const Auth = () => {
   const [email, setEmail] = useState<any>();
   const [sigla, setSigla] = useState<any>();
 
-  const [emailAuth, setEmailAuth] = useState<any>();
-  const [siglaAuth, setSiglaAuth] = useState<number>(2);
-
-  const [isFilled, setIsFilled] = useState<boolean>(true);
+  const [isFilled, setIsFilled] = useState<boolean>(false);
   const [count, setCount] = useState<number>(0);
 
-  const [teste, setTeste] = useState<number>(0);
-
-  const [redirect, setRedirect] = useState(false);
+  const [alertOn, setAlertOn] = useState(true);
 
   const navigate = useNavigate();
 
-  const getEmail = () => {
-    axios
+  const getEmail = async () => {
+    return await axios
       .post(
         "https://scx.sondait.com.br/webrun/WSSolicitacaoReceber.rule?sys=GB1",
         {
@@ -30,41 +26,27 @@ const Auth = () => {
         }
       )
       .then((res) => {
-        setEmailAuth(res.data);
-        if (emailAuth > 0) {
-          setCount(count + 1);
-        }
+        return res.data;
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
-  const getSigla = () => {
-    axios
-      .post(
+  const getSigla = async () => {
+    try {
+      const response = await axios.post(
         "https://scx.sondait.com.br/webrun/WSSolicitacaoReceber.rule?sys=GB1",
         {
           tokenapi: "28DF209D-07C8-47FD-964A-2322D66A9EF1",
           servico: "1122",
           siglarestaurante: sigla,
         }
-      )
-      .then((res) => {
-        setSiglaAuth(res.data);
-        setTeste(res.data);
-        console.log(res);
-        console.log(typeof res.data);
-        console.log(typeof teste);
-        console.log(res.data);
-        console.log(teste);
-        if (siglaAuth > 0) {
-          setCount(count + 1);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      );
+      return await response.data;
+    } catch (error: any) {
+      console.log(error);
+    }
   };
 
   const getInputEmail = (event: React.FormEvent<HTMLInputElement>) => {
@@ -91,19 +73,29 @@ const Auth = () => {
     } else {
       setIsFilled(true);
     }
-  }, [count, isFilled, teste]);
+  }, [count, isFilled]);
 
-  const getData = () => {
-    getEmail();
-    getSigla();
+  const getData = async () => {
+    const emailResp = await getEmail();
+    const siglaResp = await getSigla();
 
-    if (emailAuth !== -1 && siglaAuth !== -1) {
-      //   navigate("/Blip");
+    if (emailResp !== -1 && siglaResp !== -1) {
+      navigate("/Blip");
+    } else {
+      setAlertOn(false);
     }
   };
 
   return (
     <div>
+      {alertOn ? (
+        <></>
+      ) : (
+        <Alert severity="error">
+          <AlertTitle>Error</AlertTitle>
+          Usuário e/ou sigla incorretos
+        </Alert>
+      )}
       <div
         style={{
           margin: "auto",
@@ -116,21 +108,24 @@ const Auth = () => {
         <label>Digite o email abaixo</label>
         <br />
         <input
+          className="form-control"
           type="email"
           placeholder="joao@gmail.com"
           required
           onChange={getInputEmail}
+          style={{ textAlign: "center" }}
         />
         <br />
         <label>Digite a sigla do restaurante</label>
         <br />
         <input
+          className="form-control"
           type="text"
           placeholder="mcd"
           required
           onChange={getInputSigla}
+          style={{ textAlign: "center" }}
         ></input>
-
         <div
           style={{
             margin: "auto",
@@ -138,9 +133,14 @@ const Auth = () => {
             padding: "10px",
           }}
         >
-          <button disabled={isFilled} onClick={() => getData()}>
+          <Button
+            className="primary"
+            style={{ backgroundColor: "blue", color: "white" }}
+            disabled={false}
+            onClick={() => getData()}
+          >
             Logar
-          </button>
+          </Button>
         </div>
       </div>
       <div
