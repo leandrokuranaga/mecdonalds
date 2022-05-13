@@ -1,17 +1,25 @@
 import axios from "axios";
 import api from "../services/api";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Alert, AlertTitle, Input } from "@mui/material";
+import { UserContext } from "../state/UserStorage";
 
 const Auth = () => {
-  const [email, setEmail] = useState<any>();
-  const [sigla, setSigla] = useState<any>();
+  const context = useContext(UserContext);
+
+  const [email, setEmail] = useState<string>("");
+  const [sigla, setSigla] = useState<string>("");
+
+  const [inputEmail, setInputEmail] = useState<string>("");
+  const [inputSigla, setInputSigla] = useState<string>("");
 
   const [isFilled, setIsFilled] = useState<boolean>(false);
   const [count, setCount] = useState<number>(0);
 
   const [alertOn, setAlertOn] = useState(true);
+
+  const [timer, setTimer] = useState<any>();
 
   const navigate = useNavigate();
 
@@ -50,21 +58,23 @@ const Auth = () => {
   };
 
   const getInputEmail = (event: React.FormEvent<HTMLInputElement>) => {
-    const entrada = event.currentTarget.value;
+    setInputEmail(event.currentTarget.value);
 
-    if (entrada.includes("@")) {
+    if (inputEmail.includes("@")) {
       setEmail(event.currentTarget.value);
       setCount(count + 1);
     }
+    return inputEmail;
   };
 
   const getInputSigla = (event: React.FormEvent<HTMLInputElement>) => {
-    const entrada = event.currentTarget.value;
+    setInputSigla(event.currentTarget.value);
 
-    if (entrada.length === 3) {
+    if (inputSigla.length === 3) {
       setSigla(event.currentTarget.value);
       setCount(count + 1);
     }
+    return inputSigla;
   };
 
   useEffect(() => {
@@ -73,21 +83,44 @@ const Auth = () => {
     } else {
       setIsFilled(true);
     }
-  }, [count, isFilled]);
+  }, [count, isFilled, context?.email, context?.sigla, sigla, email]);
 
   const getData = async () => {
     const emailResp = await getEmail();
     const siglaResp = await getSigla();
 
+    context?.setSigla(inputSigla);
+    context?.setEmail(inputEmail);
+
     if (emailResp !== -1 && siglaResp !== -1) {
-      navigate("/Blip");
+      navigate("/blip");
     } else {
       setAlertOn(false);
+      const timerAlert: any = setTimeout(() => {
+        setAlertOn(true);
+      }, 5000);
+      setTimer(timerAlert);
     }
   };
 
+  useEffect(() => {
+    timer && clearTimeout(timer);
+  }, [timer]);
+
   return (
-    <div>
+    <div
+      className="text-center login-container"
+      style={{
+        width: "95vw",
+        height: "95vh",
+        paddingTop: "10%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <p style={{ color: "grey", fontSize: "2rem" }}>Vamos acessar?</p>
       {alertOn ? (
         <></>
       ) : (
@@ -98,48 +131,77 @@ const Auth = () => {
       )}
       <div
         style={{
-          margin: "auto",
           width: "50%",
-          border: "3px solid green",
-          marginTop: "5%",
+          height: "40%",
           padding: "10px",
         }}
       >
-        <label>Digite o email abaixo</label>
-        <br />
-        <input
-          className="form-control"
-          type="email"
-          placeholder="joao@gmail.com"
-          required
-          onChange={getInputEmail}
-          style={{ textAlign: "center" }}
-        />
-        <br />
-        <label>Digite a sigla do restaurante</label>
-        <br />
+        <div
+          style={{
+            width: "30vw",
+            height: "20vh",
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: "20%",
+          }}
+        >
+          <img
+            src={require("../assets/Mac.png")}
+            style={{ width: "100%", margin: "auto", paddingLeft: "60%" }}
+          />
+        </div>
         <input
           className="form-control"
           type="text"
-          placeholder="mcd"
+          placeholder="Digite a sigla do restaurante"
           required
           onChange={getInputSigla}
-          style={{ textAlign: "center" }}
+          style={{
+            marginTop: "5px",
+            borderRadius: "5px",
+            borderColor: "grey",
+            padding: "10px",
+            margin: "auto",
+            paddingTop: "5px",
+            display: "flex",
+            flexDirection: "column",
+            width: "45%",
+            fontSize: "100%",
+          }}
         ></input>
+        <input
+          className="form-control"
+          type="email"
+          placeholder="Digite o email do restaurante"
+          required
+          onChange={getInputEmail}
+          style={{
+            borderRadius: "5px",
+            borderColor: "grey",
+            padding: "10px",
+            margin: "auto",
+            paddingTop: "5px",
+            display: "flex",
+            flexDirection: "column",
+            width: "45%",
+            fontSize: "100%",
+          }}
+        />
+
         <div
           style={{
             margin: "auto",
-            width: "50%",
-            padding: "10px",
+            paddingTop: "5px",
+            display: "flex",
+            flexDirection: "column",
+            width: "48%",
           }}
         >
           <Button
-            className="primary"
-            style={{ backgroundColor: "blue", color: "white" }}
-            disabled={false}
-            onClick={() => getData()}
+            style={{ backgroundColor: "red", color: "white" }}
+            onClick={async () => await getData()}
           >
-            Logar
+            Entrar
           </Button>
         </div>
       </div>
@@ -150,9 +212,7 @@ const Auth = () => {
           margin: "20%",
           marginLeft: "60%",
         }}
-      >
-        <footer>Powered by Sonda</footer>
-      </div>
+      ></div>
     </div>
   );
 };
