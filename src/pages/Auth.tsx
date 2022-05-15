@@ -11,9 +11,6 @@ const Auth = () => {
   const [email, setEmail] = useState<string>("");
   const [sigla, setSigla] = useState<string>("");
 
-  const [inputEmail, setInputEmail] = useState<string>("");
-  const [inputSigla, setInputSigla] = useState<string>("");
-
   const [isFilled, setIsFilled] = useState<boolean>(false);
   const [count, setCount] = useState<number>(0);
 
@@ -58,23 +55,22 @@ const Auth = () => {
   };
 
   const getInputEmail = (event: React.FormEvent<HTMLInputElement>) => {
-    setInputEmail(event.currentTarget.value);
+    setEmail(event.currentTarget.value);
 
-    if (inputEmail.includes("@")) {
+    if (email.includes("@")) {
       setEmail(event.currentTarget.value);
       setCount(count + 1);
     }
-    return inputEmail;
+    return;
   };
 
   const getInputSigla = (event: React.FormEvent<HTMLInputElement>) => {
-    setInputSigla(event.currentTarget.value);
+    setSigla(event.currentTarget.value);
 
-    if (inputSigla.length === 3) {
+    if (sigla.length === 3) {
       setSigla(event.currentTarget.value);
       setCount(count + 1);
     }
-    return inputSigla;
   };
 
   useEffect(() => {
@@ -89,12 +85,17 @@ const Auth = () => {
     const emailResp = await getEmail();
     const siglaResp = await getSigla();
 
-    context?.setSigla(inputSigla);
-    context?.setEmail(inputEmail);
+    context?.setSigla(sigla);
+    context?.setEmail(email);
 
-    if (emailResp !== -1 && siglaResp !== -1) {
+    if (emailResp !== -1 || siglaResp !== -1) {
       navigate("/blip");
-    } else {
+    } else if (
+      emailResp === -1 ||
+      siglaResp === -1 ||
+      emailResp === undefined ||
+      siglaResp === undefined
+    ) {
       setAlertOn(false);
       const timerAlert: any = setTimeout(() => {
         setAlertOn(true);
@@ -102,10 +103,6 @@ const Auth = () => {
       setTimer(timerAlert);
     }
   };
-
-  useEffect(() => {
-    timer && clearTimeout(timer);
-  }, [timer]);
 
   return (
     <div
@@ -150,60 +147,67 @@ const Auth = () => {
             style={{ width: "100%", margin: "auto", paddingLeft: "60%" }}
           />
         </div>
-        <input
-          className="form-control"
-          type="text"
-          placeholder="Digite a sigla do restaurante"
-          required
-          onChange={getInputSigla}
-          style={{
-            marginTop: "5px",
-            borderRadius: "5px",
-            borderColor: "grey",
-            padding: "10px",
-            margin: "auto",
-            paddingTop: "5px",
-            display: "flex",
-            flexDirection: "column",
-            width: "45%",
-            fontSize: "100%",
-          }}
-        ></input>
-        <input
-          className="form-control"
-          type="email"
-          placeholder="Digite o email do restaurante"
-          required
-          onChange={getInputEmail}
-          style={{
-            borderRadius: "5px",
-            borderColor: "grey",
-            padding: "10px",
-            margin: "auto",
-            paddingTop: "5px",
-            display: "flex",
-            flexDirection: "column",
-            width: "45%",
-            fontSize: "100%",
-          }}
-        />
-
-        <div
-          style={{
-            margin: "auto",
-            paddingTop: "5px",
-            display: "flex",
-            flexDirection: "column",
-            width: "48%",
+        <form
+          onSubmit={async (event) => {
+            event.preventDefault();
+            await getData();
           }}
         >
-          <Button
-            style={{ backgroundColor: "red", color: "white" }}
-            onClick={async () => await getData()}
+          <input
+            className="form-control"
+            type="text"
+            placeholder="Digite a sigla do restaurante"
+            required
+            onChange={getInputSigla}
+            style={{
+              marginTop: "5px",
+              borderRadius: "5px",
+              borderColor: "grey",
+              padding: "10px",
+              margin: "auto",
+              paddingTop: "5px",
+              display: "flex",
+              flexDirection: "column",
+              width: "45%",
+              fontSize: "100%",
+            }}
+          ></input>
+          <input
+            className="form-control"
+            type="email"
+            placeholder="Digite o email do restaurante"
+            required
+            onChange={getInputEmail}
+            style={{
+              borderRadius: "5px",
+              borderColor: "grey",
+              padding: "10px",
+              margin: "auto",
+              paddingTop: "5px",
+              display: "flex",
+              flexDirection: "column",
+              width: "45%",
+              fontSize: "100%",
+            }}
+          />
+
+          <div
+            style={{
+              margin: "auto",
+              paddingTop: "5px",
+              display: "flex",
+              flexDirection: "column",
+              width: "48%",
+            }}
           >
-            Entrar
-          </Button>
-        </div>
+            <Button
+              style={{ backgroundColor: "red", color: "white" }}
+              type="submit"
+            >
+              Entrar
+            </Button>
+          </div>
+        </form>
       </div>
       <div
         style={{

@@ -4,10 +4,12 @@ import Blip from "../pages/Blip";
 import UserStorage from "../state/UserStorage";
 
 const RouterPage = () => {
+  const baseName = process.env.PUBLIC_URL;
+
   return (
     <div>
       <UserStorage>
-        <BrowserRouter>
+        <BrowserRouter basename={baseName}>
           <Routes>
             <Route path="/" element={<Auth />} />
             <Route path="/blip" element={<Blip />} />
