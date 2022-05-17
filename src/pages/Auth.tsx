@@ -87,6 +87,7 @@ const Auth = () => {
 
     context?.setSigla(sigla);
     context?.setEmail(email);
+    context?.setCodRest(siglaResp);
 
     if (emailResp !== -1 || siglaResp !== -1) {
       navigate("/blip");
@@ -129,85 +130,91 @@ const Auth = () => {
       <div
         style={{
           width: "50%",
-          height: "40%",
+          minHeight: "40%",
           padding: "10px",
         }}
       >
         <div
           style={{
             width: "30vw",
-            height: "20vh",
+            minHeight: "20vh",
             display: "flex",
             justifyContent: "center",
-            marginBottom: "20%",
           }}
         >
           <img
             src={require("../assets/Mac.png")}
-            style={{ width: "100%", margin: "auto", paddingLeft: "60%" }}
+            style={{
+              width: "80%",
+              margin: "auto",
+              paddingLeft: "60%",
+              marginBottom: "20px",
+            }}
           />
         </div>
-        <form
-          onSubmit={async (event) => {
-            event.preventDefault();
-            await getData();
-          }}
-        >
-          <input
-            className="form-control"
-            type="text"
-            placeholder="Digite a sigla do restaurante"
-            required
-            onChange={getInputSigla}
-            style={{
-              marginTop: "5px",
-              borderRadius: "5px",
-              borderColor: "grey",
-              padding: "10px",
-              margin: "auto",
-              paddingTop: "5px",
-              display: "flex",
-              flexDirection: "column",
-              width: "45%",
-              fontSize: "100%",
-            }}
-          ></input>
-          <input
-            className="form-control"
-            type="email"
-            placeholder="Digite o email do restaurante"
-            required
-            onChange={getInputEmail}
-            style={{
-              borderRadius: "5px",
-              borderColor: "grey",
-              padding: "10px",
-              margin: "auto",
-              paddingTop: "5px",
-              display: "flex",
-              flexDirection: "column",
-              width: "45%",
-              fontSize: "100%",
-            }}
-          />
-
-          <div
-            style={{
-              margin: "auto",
-              paddingTop: "5px",
-              display: "flex",
-              flexDirection: "column",
-              width: "48%",
+        <div>
+          <form
+            onSubmit={async (event) => {
+              event.preventDefault();
+              await getData();
             }}
           >
-            <Button
-              style={{ backgroundColor: "red", color: "white" }}
-              type="submit"
+            <input
+              className="form-control"
+              type="text"
+              placeholder="Digite a sigla do restaurante"
+              required
+              onChange={getInputSigla}
+              style={{
+                marginTop: "5px",
+                borderRadius: "5px",
+                borderColor: "grey",
+                padding: "10px",
+                margin: "auto",
+                paddingTop: "5px",
+                display: "flex",
+                flexDirection: "column",
+                width: "45%",
+                fontSize: "100%",
+              }}
+            ></input>
+            <input
+              className="form-control"
+              type="email"
+              placeholder="Digite o email do restaurante"
+              required
+              onChange={getInputEmail}
+              style={{
+                borderRadius: "5px",
+                borderColor: "grey",
+                padding: "10px",
+                margin: "auto",
+                paddingTop: "5px",
+                display: "flex",
+                flexDirection: "column",
+                width: "45%",
+                fontSize: "100%",
+              }}
+            />
+
+            <div
+              style={{
+                margin: "auto",
+                paddingTop: "5px",
+                display: "flex",
+                flexDirection: "column",
+                width: "48%",
+              }}
             >
-              Entrar
-            </Button>
-          </div>
-        </form>
+              <Button
+                style={{ backgroundColor: "red", color: "white" }}
+                type="submit"
+              >
+                Entrar
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
       <div
         style={{

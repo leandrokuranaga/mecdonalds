@@ -2,12 +2,30 @@ import { BlipChat } from "blip-chat-widget";
 import { useEffect, useContext } from "react";
 import { UserContext } from "../state/UserStorage";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 
 const blipClient = new BlipChat();
 
 const Blip = () => {
   const context = useContext(UserContext);
   const navigate = useNavigate();
+
+  var command = {
+    id: "{{$guid}}",
+    method: "set",
+    uri: "/contacts",
+    type: "application/vnd.lime.contact+json",
+    resource: {
+      identity: context.email + ".mcdonaldhmlallbots@0mn.io",
+      email: context.email,
+      city: context.sigla,
+      phoneNumer: context.codRest,
+      extras: {
+        sigla: context.sigla,
+        cod: context.codRest,
+      },
+    },
+  };
 
   const initiateBlipBot = () => {
     blipClient
@@ -19,24 +37,26 @@ const Blip = () => {
         userIdentity: context.email,
         userPassword: context.email,
       })
-      .withAccount({
-        email: context.email,
-      })
       .withEventHandler(BlipChat.LOAD_EVENT, function () {
         blipClient.sendMessage({
           type: "text/plain",
-          content: context.sigla,
+          content: "oi",
         });
+
+        // blipClient.sendCommand(command);
       })
+      .withCustomMessageMetadata({
+        siglametadata: context.sigla,
+      })
+
       .withoutHistory();
 
+    console.log(command);
     blipClient.build();
     blipClient.toogleChat();
   };
 
   const destroyChat = () => {
-    blipClient.toogleChat();
-
     blipClient.destroy();
   };
 

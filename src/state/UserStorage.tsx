@@ -5,6 +5,8 @@ interface User {
   setEmail: (param: string) => void;
   sigla: string;
   setSigla: (param: string) => void;
+  codRest: number;
+  setCodRest: (param: number) => void;
 }
 
 export const UserContext = createContext<User | undefined>(undefined);
@@ -16,9 +18,12 @@ const UserStorage = ({
 }) => {
   const [email, setEmail] = useState<string>("");
   const [sigla, setSigla] = useState<string>("");
+  const [codRest, setCodRest] = useState<number>(0);
 
   return (
-    <UserContext.Provider value={{ email, setEmail, sigla, setSigla }}>
+    <UserContext.Provider
+      value={{ email, setEmail, sigla, setSigla, codRest, setCodRest }}
+    >
       {children}
     </UserContext.Provider>
   );
