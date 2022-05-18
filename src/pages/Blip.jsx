@@ -2,30 +2,15 @@ import { BlipChat } from "blip-chat-widget";
 import { useEffect, useContext } from "react";
 import { UserContext } from "../state/UserStorage";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 const blipClient = new BlipChat();
+const id = uuidv4();
+console.log(id + "id");
 
 const Blip = () => {
   const context = useContext(UserContext);
   const navigate = useNavigate();
-
-  var command = {
-    id: "{{$guid}}",
-    method: "set",
-    uri: "/contacts",
-    type: "application/vnd.lime.contact+json",
-    resource: {
-      identity: context.email + ".mcdonaldhmlallbots@0mn.io",
-      email: context.email,
-      city: context.sigla,
-      phoneNumer: context.codRest,
-      extras: {
-        sigla: context.sigla,
-        cod: context.codRest,
-      },
-    },
-  };
 
   const initiateBlipBot = () => {
     blipClient
@@ -34,24 +19,22 @@ const Blip = () => {
       )
       .withAuth({
         authType: BlipChat.DEV_AUTH,
-        userIdentity: context.email,
-        userPassword: context.email,
+        userIdentity: id,
+        userPassword: id,
       })
       .withEventHandler(BlipChat.LOAD_EVENT, function () {
         blipClient.sendMessage({
           type: "text/plain",
           content: "oi",
         });
-
-        // blipClient.sendCommand(command);
       })
       .withCustomMessageMetadata({
-        siglametadata: context.sigla,
+        codrestaurante: context.codRest,
+        siglarestaurante: context.sigla,
       })
-
       .withoutHistory();
-
-    console.log(command);
+    console.log(context.codRest + "codigo restaurasnte");
+    console.log(context.sigla + "sigla do restaurante");
     blipClient.build();
     blipClient.toogleChat();
   };

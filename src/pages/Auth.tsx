@@ -11,9 +11,6 @@ const Auth = () => {
   const [email, setEmail] = useState<string>("");
   const [sigla, setSigla] = useState<string>("");
 
-  const [isFilled, setIsFilled] = useState<boolean>(false);
-  const [count, setCount] = useState<number>(0);
-
   const [alertOn, setAlertOn] = useState(true);
 
   const [timer, setTimer] = useState<any>();
@@ -59,7 +56,6 @@ const Auth = () => {
 
     if (email.includes("@")) {
       setEmail(event.currentTarget.value);
-      setCount(count + 1);
     }
     return;
   };
@@ -69,17 +65,16 @@ const Auth = () => {
 
     if (sigla.length === 3) {
       setSigla(event.currentTarget.value);
-      setCount(count + 1);
     }
   };
 
-  useEffect(() => {
-    if (count === 2) {
-      setIsFilled(false);
-    } else {
-      setIsFilled(true);
-    }
-  }, [count, isFilled, context?.email, context?.sigla, sigla, email]);
+  useEffect(() => {}, [
+    context?.email,
+    context?.sigla,
+    sigla,
+    email,
+    context?.codRest,
+  ]);
 
   const getData = async () => {
     const emailResp = await getEmail();
@@ -89,7 +84,7 @@ const Auth = () => {
     context?.setEmail(email);
     context?.setCodRest(siglaResp);
 
-    if (emailResp !== -1 || siglaResp !== -1) {
+    if (emailResp !== -1 && siglaResp !== -1) {
       navigate("/blip");
     } else if (
       emailResp === -1 ||

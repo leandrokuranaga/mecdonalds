@@ -5,8 +5,8 @@ interface User {
   setEmail: (param: string) => void;
   sigla: string;
   setSigla: (param: string) => void;
-  codRest: number;
-  setCodRest: (param: number) => void;
+  codRest: any;
+  setCodRest: (param: any) => void;
 }
 
 export const UserContext = createContext<User | undefined>(undefined);
@@ -18,7 +18,7 @@ const UserStorage = ({
 }) => {
   const [email, setEmail] = useState<string>("");
   const [sigla, setSigla] = useState<string>("");
-  const [codRest, setCodRest] = useState<number>(0);
+  const [codRest, setCodRest] = useState<any>("");
 
   return (
     <UserContext.Provider
